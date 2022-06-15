@@ -1,0 +1,26 @@
+#!/bin/bash
+
+#SBATCH --job-name=hypernet                                                           # Job name
+#SBATCH --output=terminal_outputs/%j_hypernet_transformer_base_hebbian.out            # Name of output file (%j expands to jobId)
+#SBATCH --cpus-per-task=46                                                            # Schedule cores
+#SBATCH --time=23:00:00                                                               # Run time (hh:mm:ss) - run for one hour max
+#SBATCH --partition=red                                                               # Run on either the Red or Brown cpu or desktop
+
+
+echo "Start time : $(date)"
+
+echo "******OR Graph Coloring **********"
+
+##BASELINE OR no REC
+echo "python3 GraphColoring.py --train_steps=4 --eval_steps=4 --merging_tgt sum --recursivity none --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=8000 --lr_rules=0.03 --lr=0.01 --num_runs=20"
+python3 GraphColoring.py --train_steps=4 --eval_steps=4 --merging_tgt sum --recursivity none --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=8000 --lr_rules=0.03 --lr=0.01 --num_runs=20
+##BASELINE OR REC
+echo "python3 GraphColoring.py --train_steps=4 --eval_steps=4 --merging_tgt sum --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=8000 --lr_rules=0.03 --lr=0.01 --num_runs=20"
+python3 GraphColoring.py --train_steps=4 --eval_steps=4 --merging_tgt sum --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=8000 --lr_rules=0.03 --lr=0.01 --num_runs=20
+#OTHER TEMPLATE SET
+#with A00, B00, C00, OR2
+echo "python3 GraphColoring.py --template_set=-1 --train_steps=4 --eval_steps=4 --merging_tgt sum --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.03 --lr=0.01 --num_runs=20"
+python3 GraphColoring.py --template_set=-1 --train_steps=4 --eval_steps=4 --merging_tgt sum --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.03 --lr=0.01 --num_runs=20
+#with A00, B00, C00, OR1, OR2
+echo "python3 GraphColoring.py --template_set=-1 --train_steps=4 --eval_steps=4 --merging_tgt sum --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.03 --lr=0.01 --num_runs=20"
+python3 GraphColoring.py --template_set=-1 --train_steps=4 --eval_steps=4 --merging_tgt sum --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.03 --lr=0.01 --num_runs=20

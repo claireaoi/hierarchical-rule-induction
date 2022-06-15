@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#SBATCH --job-name=hypernet                                                           # Job name
+#SBATCH --output=terminal_outputs/%j_hypernet_transformer_base_hebbian.out            # Name of output file (%j expands to jobId)
+#SBATCH --cpus-per-task=46                                                            # Schedule cores
+#SBATCH --time=23:00:00                                                               # Run time (hh:mm:ss) - run for one hour max
+#SBATCH --partition=red                                                               # Run on either the Red or Brown cpu or desktop
+
+
+echo "Start time : $(date)"
+
+echo "******Decay TwoChildren**********"
+
+############ADJ TO RED
+#####OR no REC
+echo "python3 TwoChildren.py --train_steps=4 --eval_steps=4 --recursivity none --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=10000 --lr_rules=0.03 --lr=0.01 --num_runs=20"
+python3 TwoChildren.py --train_steps=4 --eval_steps=4 --recursivity none --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=10000 --lr_rules=0.03 --lr=0.01 --num_runs=20
+#noise, temp linear decay
+echo "python3 TwoChildren.py --gumbel_noise_decay_mode linear --temperature_decay_mode linear --train_steps=4 --eval_steps=4 --recursivity none --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=10000 --lr_rules=0.03 --lr=0.01 --num_runs=20 --body_noise_decay_epoch=200 --head_noise_decay_epoch=100 --body_noise_decay=0.8 --head_noise_decay=0.8 --body_noise_scale=1.0 --head_noise_scale=0.8 --gumbel_noise=0.5 --temperature_start=1 --temperature_end=0.01"
+python3 TwoChildren.py --gumbel_noise_decay_mode linear --temperature_decay_mode linear --train_steps=4 --eval_steps=4 --recursivity none --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=10000 --lr_rules=0.03 --lr=0.01 --num_runs=20 --body_noise_decay_epoch=200 --head_noise_decay_epoch=100 --body_noise_decay=0.8 --head_noise_decay=0.8 --body_noise_scale=1.0 --head_noise_scale=0.8 --gumbel_noise=0.5 --temperature_start=1 --temperature_end=0.01
+
+######OR & REC 
+echo "python3 TwoChildren.py --train_steps=4 --eval_steps=4 --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=10000 --lr_rules=0.03 --lr=0.01 --num_runs=20"
+python3 TwoChildren.py --train_steps=4 --eval_steps=4 --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=10000 --lr_rules=0.03 --lr=0.01 --num_runs=20
+#noise, temp linear decay
+echo "python3 TwoChildren.py --gumbel_noise_decay_mode linear --temperature_decay_mode linear --train_steps=4 --eval_steps=4 --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=10000 --lr_rules=0.03 --lr=0.01 --num_runs=20 --body_noise_decay_epoch=200 --head_noise_decay_epoch=100 --body_noise_decay=0.8 --head_noise_decay=0.8 --body_noise_scale=1.0 --head_noise_scale=0.8 --gumbel_noise=0.5 --temperature_start=1 --temperature_end=0.01"
+python3 TwoChildren.py --gumbel_noise_decay_mode linear --temperature_decay_mode linear --train_steps=4 --eval_steps=4 --gumbel_noise=0.3 --template_set=1 --max_depth=4 --num_iters=10000 --lr_rules=0.03 --lr=0.01 --num_runs=20 --body_noise_decay_epoch=200 --head_noise_decay_epoch=100 --body_noise_decay=0.8 --head_noise_decay=0.8 --body_noise_scale=1.0 --head_noise_scale=0.8 --gumbel_noise=0.5 --temperature_start=1 --temperature_end=0.01

@@ -1,0 +1,36 @@
+#!/bin/bash
+
+#SBATCH --job-name=hypernet                                                           # Job name
+#SBATCH --output=terminal_outputs/%j_hypernet_transformer_base_hebbian.out            # Name of output file (%j expands to jobId)
+#SBATCH --cpus-per-task=46                                                            # Schedule cores
+#SBATCH --time=23:00:00                                                               # Run time (hh:mm:ss) - run for one hour max
+#SBATCH --partition=red                                                               # Run on either the Red or Brown cpu or desktop
+
+
+echo "Start time : $(date)"
+
+echo "******Recursive Buzz**********"
+
+#DEFAULT SET A00+, B00+, C00+ 
+echo "python3 Buzz.py --train_steps=8 --eval_steps=9 --template_set=1 --add_p0=True --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20"
+python3 Buzz.py --train_steps=8 --eval_steps=9 --template_set=1 --add_p0=True --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20
+
+#Try with A10+, B00, d>=3, template_set=666 recursivity="moderate"
+echo "python3 Buzz.py --train_steps=8 --eval_steps=9 --template_set=666 --gumbel_noise=0.3 --max_depth=3 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20"
+python3 Buzz.py --train_steps=8 --eval_steps=9 --template_set=666 --gumbel_noise=0.3 --max_depth=3 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20
+
+#Try with A00+, B00, C00 d>=4, template_set=6 recursivity="moderate"
+echo "python3 Buzz.py --train_steps=8 --eval_steps=9 --template_set=6 --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20"
+python3 Buzz.py --train_steps=8 --eval_steps=9 --template_set=6 --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20
+
+#Try with A00+, B00, Inv, template_set=66 d>=4, recursivity="moderate"
+echo "python3 Buzz.py --train_steps=8 --eval_steps=9 --template_set=66 --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20"
+python3 Buzz.py --train_steps=8 --eval_steps=9 --template_set=66 --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20
+
+#Try with RecSet 1: template_set=16 Rec1, B00, Inv, may have recursivity=none
+echo "python3 Buzz.py --train_steps=8 --eval_steps=9 --recursivity="none" --template_set=16 --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20"
+python3 Buzz.py --train_steps=8 --eval_steps=9 --recursivity="none" --template_set=16 --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20
+
+#Full new set RecSet 2: template_set=17 Rec1,A00, C00 B00
+echo "python3 Buzz.py --train_steps=8 --eval_steps=19 --recursivity="none" --template_set=17 --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20"
+python3 Buzz.py --train_steps=8 --eval_steps=19 --recursivity="none" --template_set=17 --gumbel_noise=0.3 --max_depth=4 --num_iters=8000 --lr_rules=0.02 --lr=0.005 --num_runs=20

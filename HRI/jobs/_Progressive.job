@@ -1,0 +1,149 @@
+#!/bin/bash
+
+#SBATCH --job-name=hypernet                                                           # Job name
+#SBATCH --output=terminal_outputs/%j_hypernet_transformer_base_hebbian.out            # Name of output file (%j expands to jobId)
+#SBATCH --cpus-per-task=46                                                            # Schedule cores
+#SBATCH --time=23:00:00                                                               # Run time (hh:mm:ss) - run for one hour max
+#SBATCH --partition=red                                                               # Run on either the Red or Brown cpu or desktop
+
+
+echo "Start time : $(date)"
+
+
+echo "****GRAPH COLORING********"
+#NOT EXTENDED TEMPLATE not p0
+echo "python3 GraphColoring.py --template_set=0 --add_p0=False --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=0 --add_p0=False --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+echo "python3 GraphColoring.py --template_set=0 --add_p0=False --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=0 --add_p0=False --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+echo "python3 GraphColoring.py --template_set=0 --add_p0=False --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=0 --add_p0=False --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+
+#NOT EXTENDED TEMPLATE w/ p0
+echo "python3 GraphColoring.py --template_set=0 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=0 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+echo "python3 GraphColoring.py --template_set=0 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=0 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+echo "python3 GraphColoring.py --template_set=0 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=0 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+
+
+#EXTENDED TEMPLATE w/ p0
+echo "python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+echo "python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+echo "python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+
+
+#EXTENDED TEMPLATE w/out p0
+echo "python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+echo "python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+echo "python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/GraphColoring_1.txt
+
+
+#gumbel more noise & longer and lr smaller
+echo "python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=4000 --gumbel_noise 0.3 --lr=0.01 --lr_rules=0.04
+"
+python3 GraphColoring.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=4000 --gumbel_noise 0.3 --lr=0.01 --lr_rules=0.04 >> terminal_outputs/GraphColoring_1.txt
+
+
+echo "******EVEN SUCC**********"
+
+#EXTENDED TEMPLATE w/ p0
+echo "python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/EvenSucc_1.txt
+echo "python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/EvenSucc_1.txt
+echo "python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/EvenSucc_1.txt
+
+
+#EXTENDED TEMPLATE w/out p0
+echo "python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/EvenSucc_1.txt
+echo "python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/EvenSucc_1.txt
+echo "python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/EvenSucc_1.txt
+
+#gumbel more noise & longer and lr smaller
+echo
+python3 EvenSucc.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=4000 --gumbel_noise 0.3 --lr=0.01 --lr_rules=0.04 >> terminal_outputs/EvenSucc_1.txt
+
+echo "******Buzz**********"
+#EXTENDED TEMPLATE w/ p0
+echo "python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/Buzz_1.txt
+echo "python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/Buzz_1.txt
+echo "python3 Buzz.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000
+"
+python3 Buzz.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/Buzz_1.txt
+
+
+#EXTENDED TEMPLATE w/out p0
+echo "python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000"
+python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/Buzz_1.txt
+
+echo "python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000"
+python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/Buzz_1.txt
+
+echo "python3 Buzz.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000"
+python3 Buzz.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=2000 >> terminal_outputs/Buzz_1.txt
+
+
+#gumbel more noise & longer and lr smaller
+echo "python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=5000 --gumbel_noise 0.3 --lr=0.01 --lr_rules=0.04"
+python3 Buzz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --unified_templates=True --vectorise=True --num_runs=10 --max_depth=3 --num_iters=5000 --gumbel_noise 0.3 --lr=0.01 --lr_rules=0.04 >> terminal_outputs/Buzz_1.txt
+
+
+echo "******Fizz**********"
+
+#EXTENDED TEMPLATE w/ p0
+echo "python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=2000 "
+python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=2000 >> terminal_outputs/Fizz_1.txt
+echo "python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=3000 "
+python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=3000 >> terminal_outputs/Fizz_1.txt
+echo "python3 Fizz.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=2000"
+python3 Fizz.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=2000 >> terminal_outputs/Fizz_1.txt
+
+
+#EXTENDED TEMPLATE w/out p0
+echo "python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=2000"
+python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax softmax --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=2000 >> terminal_outputs/Fizz_1.txt
+
+echo "python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=3000"
+python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --gumbel_noise=0.2 --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=3000 >> terminal_outputs/Fizz_1.txt
+
+echo "python3 Fizz.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=2000"
+python3 Fizz.py --template_set=1 --add_p0=True --merging_and max --clamp param --softmax none --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=2000 >> terminal_outputs/Fizz_1.txt
+
+
+#gumbel more noise & longer and lr smaller
+echo "python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=6000 --gumbel_noise 0.3 --lr=0.01 --lr_rules=0.04"
+python3 Fizz.py --template_set=1 --add_p0=True --merging_and sum --clamp none --softmax gumbel --unified_templates=True --vectorise=True --num_runs=10 --max_depth=4 --num_iters=6000 --gumbel_noise 0.3 --lr=0.01 --lr_rules=0.04 >> terminal_outputs/Fizz_1.txt

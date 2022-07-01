@@ -14,10 +14,10 @@ from utils.Log import Logger
 from utils.Dataset import GrandparentNLMDataset
 from utils.Model import Model
 from utils.Learn import Learn
-from utils.ProgressiveLearn import ProgressiveLearn
+# from utils.ProgressiveLearn import ProgressiveLearn
 
 from utils.UniversalParam import add_universal_parameters
-from utils.Evolve import Evolve
+# from utils.Evolve import Evolve
 
 
 parser = argparse.ArgumentParser()
@@ -44,12 +44,8 @@ if not args.no_log:
 
 
 if __name__ == '__main__':
-    if args.use_cmaes and not args.use_progressive_model:
-        exp = Evolve(args)
-    elif args.use_cmaes and args.use_progressive_model:
+    if args.use_cmaes or args.use_progressive_model:
         raise NotImplemented
-    elif args.use_progressive_model and not args.use_cmaes:
-        exp = ProgressiveLearn(args)
     else:
         exp = Learn(args)
     exp.run()

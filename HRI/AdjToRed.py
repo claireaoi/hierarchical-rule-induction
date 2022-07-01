@@ -15,8 +15,8 @@ from utils.Dataset import AdjToRedDataset
 from utils.Model import Model
 from utils.Learn import Learn
 from utils.UniversalParam import add_universal_parameters
-from utils.ProgressiveLearn import ProgressiveLearn
-from utils.Evolve import Evolve
+#from utils.ProgressiveLearn import ProgressiveLearn
+#from utils.Evolve import Evolve
 
 '''
 Default hyper parameters to run this script: python AdjToRed.py --use_noise --num_runs 200 --model XXX
@@ -125,12 +125,12 @@ if not args.no_log:
 print(args)
 
 if __name__ == '__main__':
-    if args.use_cmaes and not args.use_progressive_model:
-        exp = Evolve(args)
-    elif args.use_cmaes and args.use_progressive_model:
+    # if args.use_cmaes and not args.use_progressive_model:
+    #     exp = Evolve(args)
+     # elif args.use_progressive_model and not args.use_cmaes:
+    #     exp = ProgressiveLearn(args)
+    if args.use_cmaes or args.use_progressive_model:
         raise NotImplemented
-    elif args.use_progressive_model and not args.use_cmaes:
-        exp = ProgressiveLearn(args)
     else:
         exp = Learn(args)
     exp.run()

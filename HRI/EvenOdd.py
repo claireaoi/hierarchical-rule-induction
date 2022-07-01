@@ -15,8 +15,8 @@ from utils.Dataset import EvenOddDataset
 from utils.Model import Model
 from utils.Learn import Learn
 from utils.UniversalParam import add_universal_parameters
-from utils.ProgressiveLearn import ProgressiveLearn
-from utils.Evolve import Evolve
+# from utils.ProgressiveLearn import ProgressiveLearn
+# from utils.Evolve import Evolve
 
 '''
 Default hyper parameters to run this script: python EvenOdd.py --use_noise --model xxx
@@ -45,12 +45,8 @@ if not args.no_log:
     sys.stdout = Logger(task_name=args.task_name, stream=sys.stdout, path=args.log_dir)
 
 if __name__ == '__main__':
-    if args.use_cmaes and not args.use_progressive_model:
-        exp = Evolve(args)
-    elif args.use_cmaes and args.use_progressive_model:
+    if args.use_cmaes or args.use_progressive_model:
         raise NotImplemented
-    elif args.use_progressive_model and not args.use_cmaes:
-        exp = ProgressiveLearn(args)
     else:
         exp = Learn(args)
     exp.run()

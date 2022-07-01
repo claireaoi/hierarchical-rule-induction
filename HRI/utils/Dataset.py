@@ -1,4 +1,5 @@
 """Implement datasets classes for graph and family tree tasks."""
+
 import re
 import numpy as np
 import pdb
@@ -40,7 +41,8 @@ def gen_graph(n, pmin, pmax, gen_method, directed):
 class GrandparentDataset():
     def __init__(self, p_marriage=0.8, p_target=0.1):
         '''
-        p_target: the minimal percentage of targets
+        Args:
+            p_target: the minimal percentage of targets
         '''
         self.p_marriage = p_marriage
         self.p_target = p_target
@@ -705,12 +707,14 @@ class GQADataset():
             # self.num_model = num_model
         data_root = joinpath(root_path, 'sceneGraphs')  # path for scene graph, json files downloaded from GQA
         domain_path = joinpath(root_path, f'domains{str(filter_under)}_{tgt_pred}'+('' if filter_indirect else 'keepAll')+f'_{count_min}_{count_max}')  # path for domain files
+        #unfiltered_dataset_path=joinpath(root_path, f'domains{str(filter_under)}_{tgt_pred}')  # path for unfiltered domain file
+
         all_domain_path = joinpath(domain_path, 'all_domains')
         prep_gqa_data(root_path=root_path, data_root=data_root, domain_path=domain_path,
                       all_domain_path=all_domain_path, filter_under=filter_under, target=tgt_pred,
                       filter_indirect=filter_indirect)
     
-        self.dataset = DomainDataset(domain_path, tgt_pred, task='gqa', count_min=count_min, count_max=count_max)
+        self.dataset = DomainDataset(domain_path, tgt_pred, task='gqa', count_min=count_min, count_max=count_max) #unfiltered_dataset_path=unfiltered_dataset_path)
         self.is_unp = None if tgt_pred=='MT' else self.dataset.pred_register.is_unp(tgt_pred)
         self.mode_ls = ['train', 'valid', 'test']
         # self.refresh_dataset()
@@ -888,10 +892,6 @@ def prep_wn_dataset(data_root, tgt_pred, task='wn'):
     fact_domain = list(dataset.fact_pred2domain_dict.values())[0][0]
     test_domain = list(dataset.test_pred2domain_dict.values())[0][0]
     valid_domain = list(dataset.valid_pred2domain_dict.values())[0][0]
-
-    # fact_unp, fact_bip = fact_domain.toArray(update=False, keep_array=True)
-    # valid_unp, valid_bip = valid_domain.toArray(update=False, keep_array=True)
-    # test_unp, test_bip = test_domain.toArray(update=False, keep_array=True)
 
     bg_domain = fact_domain
 

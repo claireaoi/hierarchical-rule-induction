@@ -27,26 +27,6 @@ from utils.Initialise import init_aux_valuation
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
 
-# def infer_one_wn_pred(pred_name, valuation_eval, target, num_constants, use_gpu, model_dir, model=None):
-#     if model == None:
-#         path = joinpath(model_dir, pred_name)
-#         if use_gpu:
-#             model = torch.load(path).cuda()
-#             model.args.use_gpu = True
-#         else:
-#             model = torch.load(path, map_location=torch.device('cpu'))
-#             model.args.use_gpu = False
-
-#     if use_gpu:
-#         trained_emb = model.embeddings.clone()
-#     else:
-#         trained_emb = model.embeddings.clone().to('cpu')
-    
-#     unifs = get_unifs(
-#         model.rules, trained_emb, args=model.args, mask=model.hierarchical_mask,
-#         temperature=model.args.temperature_end, gumbel_noise=0
-#     )
-#     return None
 
 def mrr_and_hit(prediction, target):
     
@@ -150,7 +130,7 @@ def infer_one_domain(pred_name, valuation_eval_temp, bg_pred_ind_ls_noTF, target
             valuation_eval = valuation_eval.cuda()
             target = target.cuda()
         valuation_eval, valuation_tgt = model.infer(valuation_eval, num_constants, unifs, steps=model.args.eval_steps,
-                                            num_predicates=len(total_pred_ind_ls_TF), num_keep=len(bg_pred_ind_ls_noTF)+2*int(model.args.add_p0))
+                                            num_predicates=len(total_pred_ind_ls_TF), numFixedVal=len(bg_pred_ind_ls_noTF)+2*int(model.args.add_p0))
 
     if return_id is None:
         return valuation_tgt.data
@@ -159,6 +139,9 @@ def infer_one_domain(pred_name, valuation_eval_temp, bg_pred_ind_ls_noTF, target
 
 
 class LearnMultiTasks():
+    """
+    Main Learning procedure in the Multi Task case
+    """
 
     def __init__(self, args):
         args.use_gpu = args.use_gpu and torch.cuda.is_available()

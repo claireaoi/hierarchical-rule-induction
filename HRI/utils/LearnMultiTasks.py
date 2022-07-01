@@ -103,7 +103,7 @@ def infer_one_domain(pred_name, valuation_eval_temp, bg_pred_ind_ls_noTF, target
             valuation_eval = valuation_eval.cuda()
             target = target.cuda()
         valuation_eval, valuation_tgt = model.infer(valuation_eval, num_constants, unifs, steps=model.args.eval_steps,
-                                            num_predicates=len(total_pred_ind_ls_TF), num_keep=len(bg_pred_ind_ls_noTF)+2*int(model.args.add_p0))
+                                            num_predicates=len(total_pred_ind_ls_TF), numFixedVal=len(bg_pred_ind_ls_noTF)+2*int(model.args.add_p0))
 
     if return_id is None:
         return valuation_tgt.data

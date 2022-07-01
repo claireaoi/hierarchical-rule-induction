@@ -38,7 +38,6 @@ GROUNDING_DICT={
 def extract_symbolic_model(model, parameters=None, rules=None, predicates_labels=None):
     """
     Extract the symbolic model from a soft model.
-    For CMAES, parameters of the model would be given as input too.
 
     Outputs:
         symbolic_unifs: tensor size (num_predicates, num_body, num_rules), with 0 and 1, representing the symbolic rule extracted from the model. 
@@ -98,10 +97,11 @@ def extract_symbolic_model(model, parameters=None, rules=None, predicates_labels
 
 def get_symbolic_templates(rules_str, permute_body1, permute_body2):
     """
-    In case use permutation parameters (for progressive Model), here retrieve full rule structure, 
+    Get the symbolic Templates.
+
+    #NOTE: In case use permutation parameters (for progressive Model), here retrieve full rule structure, 
     ie  A10, B01, C00+ etc. instead of A, B, C+ etc.
-    Args:
-    Outputs:
+
     """
     full_rules_str=[]
 
@@ -141,20 +141,13 @@ def get_symbolic_templates(rules_str, permute_body1, permute_body2):
     return full_rules_str
 
 
-# def under_depth(model, bodies, symbolic_path_depth):
-#     max_depth=0
-#     for pred in bodies:
-#         if not pred in model.idx_background_predicates:
-#             if not pred in list(symbolic_path_depth.keys()):
-#                 print("ERROOOOOOOORR", symbolic_path_depth.keys())
-#                 print(pred)
-#             else:
-#                 max_depth=max(max_depth, symbolic_path_depth[pred])
-#     return max_depth
-
 
 def get_symbolic_depth(model, symbolic_path):
-    print("symbolic path {}".format(symbolic_path))
+    """
+    Get the depth of the szmbolic path.
+    
+    """
+    print("Symbolic path {}".format(symbolic_path))
     symbolic_path_depth=dict()#dictionary of predicates w/ their symbolic path depth
     #---init with the ones know about...
     for pred in model.idx_background_predicates:
@@ -179,12 +172,18 @@ def get_symbolic_depth(model, symbolic_path):
 
 def extract_symbolic_path(args, unifs, full_rules_str, predicates_labels=None):
     """
-        symbolic path: list of predicates present in the symbolic path. (predicate indices!)
-        from unification matrice, top down, last predicate being target
-
-        Inputs: 
+        Extract the symbolic path, top down, from last predicate (target) and the unification score (look for the max scores)
+        
+        Args:
             unifs, of shape (num_predicates, num_body, num_rules)
             full_rules_str: templates of the different rules
+
+        Outputs:
+            symbolic_path: list of symbolic rules used in the symbolic model, given in form of indices
+            symbolic_formula: logical formula extracted
+            symbolic_unifs: symbolic_unifs: tensor size (num_predicates, num_body, num_rules), with 0 and 1, representing the symbolic rule extracted from the model. 
+            rule_max_body_idx:  tensor of shape (num_rules, num_body), keeping the index of the max unification scores
+
 
     """
     num_predicates, num_body, num_rules=unifs.shape #contain p0 and p1 if there...
@@ -231,8 +230,9 @@ def extract_symbolic_path(args, unifs, full_rules_str, predicates_labels=None):
 
 def get_symbolic_formula(args, symbolic_path, num_predicates, full_rules_str, predicates_labels=None):
     """
+    Get the Symbolic formula given the symbolic path and the rule structures.
     
-    #TODO: Simplified if True/ False etc,  Hierarchic case, add depth!
+    #TODO: Can be Simplify the formula True/ False etc,  Hierarchic case, add depth!
     """
 
     #---init 

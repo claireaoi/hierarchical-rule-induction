@@ -13,6 +13,11 @@ from .Utils import gumbel_softmax_sample, map_rules_to_pred, fuzzy_and, fuzzy_or
 ##---------------------------
 
 class Model():
+
+    """Old CLass of the Model
+    This model corresponds to the model in LRI (Campero, 2018).
+    New extended model in coreModel
+    """
     def __init__(self,
                  args,
                  rules_str, 

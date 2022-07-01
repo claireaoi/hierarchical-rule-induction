@@ -11,8 +11,15 @@ import random
 
 def init_mask(model):
     """
-    Initialise different masks
-    #TODO: in dictionary too?
+    Update different masks.
+    #NOTE: Masks are tensors with 0 and 1 which depends on the template structure. 
+    They are useful to proceed to the vectorised inference procedure.
+    
+        model.mask_rule_arity1: tensor shape (num_rules), with 1 if the head predicate of the rule is of arity 1, 0 else
+        model.mask_rule_C: tensor shape (num_rules), with 1 if the rule is a C type of rule, 0 else. 
+        model.mask_extended_rule: tensor shape (num_rules), with 1 if the rule is an extended rule, 0 else 
+    
+
     """
     #rules of arity 1
     model.mask_rule_arity1 = torch.tensor([model.rules_arity[r]==1 for r in range(model.num_rules-1)]).double()
@@ -24,13 +31,13 @@ def init_mask(model):
     #for permutation Masks
     update_permutation_masks(model)
 
-    check_mask=False #temporary for check up
-    if check_mask:
-        print("Permute 1st body", model.mask_rule_permute_body1)
-        print("Permute 2nd body", model.mask_rule_permute_body2)
-        print("Rule arity 1", model.mask_rule_arity1 )
-        print("Rule type C",model.mask_rule_C)
-        print("Extended rule mask",model.mask_extended_rule)
+    # check_mask=False #temporary for check up
+    # if check_mask:
+    #     print("Permute 1st body", model.mask_rule_permute_body1)
+    #     print("Permute 2nd body", model.mask_rule_permute_body2)
+    #     print("Rule arity 1", model.mask_rule_arity1 )
+    #     print("Rule type C",model.mask_rule_C)
+    #     print("Extended rule mask",model.mask_extended_rule)
     
 
 
@@ -73,7 +80,8 @@ def get_hierarchical_mask(depth_predicates, num_rules, num_predicates, num_body,
     """
     Construct a hierarchical mask which would be useful when computing unifs score. (for hierarchical models and vectorise procedure!)
     It would impose for some rule to only look at lower depth predicates.
-    More precisely, for a rule of depth d, the mask depth it should look at should be: (for recursivity=full)
+    
+    #NOTE: More precisely, for a rule of depth d, the mask depth it should look at should be: (for recursivity=full)
     __d if the rule is recursive/extended, for body1, body2 if recursivity="full"
     __d-1 if the rule is recursive/extended, for body3
     __d-1 if the rule is not recursive

@@ -145,8 +145,10 @@ def init_rules_embeddings(model, num_rules=None):
 
 def init_aux_valuation(model, valuation_init, num_constants, steps=1):
     """
-    output:
-        valuation. include all: valuation True, False, background predicates, symbolic predicates, soft predicates.
+    Initialise Valuations.
+
+    Output:
+        valuation: include all valuation: True, False, background predicates, symbolic predicates, soft predicates.
         #TODO put in data generator
     """
     val_false = torch.zeros((num_constants,num_constants))
@@ -164,9 +166,6 @@ def init_aux_valuation(model, valuation_init, num_constants, steps=1):
             valuation.insert(0, Variable(val_false))
             valuation.insert(0, Variable(val_true))
 
-        # #---add aux symbolic predicates valuation for progressive model
-        # if model.args.use_progressive_model and model.args.symbolic_library_size>0 and model.num_symbolic_predicates>0:
-        #     valuation = init_symbolic_valuation(model, valuation, num_constants, steps=steps)
         
         #add auxiliary predicates
         for pred in model.idx_soft_predicates:
@@ -193,10 +192,6 @@ def init_aux_valuation(model, valuation_init, num_constants, steps=1):
             else:
                 raise NotImplementedError
 
-        #---add aux symbolic predicates valuation if need
-        # if model.args.use_progressive_model and model.num_symbolic_predicates>0:#or model.args.symbolic_library_size>0
-        #     valuation_sym = init_symbolic_valuation(model, torch.stack(valuation_, dim=0), num_constants, steps=steps)
-        # else:
         valuation_sym=torch.stack(valuation_, dim=0)
         
         #---add aux predicates
@@ -211,9 +206,13 @@ def init_aux_valuation(model, valuation_init, num_constants, steps=1):
     return valuation
 
 
-#-------------create templates
+
 
 def init_rule_templates(args, num_background=1, max_depth=0, tgt_arity=1, templates_unary=[], templates_binary=[], predicates_labels=None):
+    """
+    Initialise Rule Templates
+    
+    """
     # if args.hierarchical and args.use_progressive_model and args.num_pred_per_arity>0:
     #     #Here sample from template set
     #     tuplet=sample_template_hierarchical(num_background, max_depth, tgt_arity, templates_unary, templates_binary, predicates_labels=predicates_labels, num_sample=args.num_pred_per_arity)
@@ -229,9 +228,22 @@ def init_rule_templates(args, num_background=1, max_depth=0, tgt_arity=1, templa
 
 def create_template_hierarchical(num_background, max_depth, tgt_arity, templates_unary, templates_binary, add_p0, predicates_labels=None):
     """
-        Precise the number of predicates,
-        The max_depth.
-        The arity of the target predicates.
+        Initialise Rule Templates for Hierarchical Model
+        
+        Inputs:
+            max_depth: max depth allowed, int 
+            tgt_arity: arity of the target predicate, int
+            templates_unary: list of the possible unary templates (templates whose head predicate is unary)
+            templates_binary: list of the possible binary templates
+            add_p0: if add True and False as initial predicates
+
+        Outputs:
+            idx_background: list indices of background predicates
+            idx_auxiliary: list indices of auxiliary predicates
+            rules_str: list rule structure (templates)
+            predicates_labels: list predicates labels
+            rules_arity: list rules arity
+            depth_predicates: list depth predicates
     """
     #Background predicate
     # NOTE: here, num_background == real background + True + False
@@ -284,78 +296,23 @@ def create_template_hierarchical(num_background, max_depth, tgt_arity, templates
 
 
 
-def sample_template_hierarchical(num_background, max_depth, tgt_arity, templates_unary, templates_binary, predicates_labels=None, num_sample=0):
-    """
-        Precise the number of predicatesm, The max_depth.,The arity of the target predicates.
-        And sample appropriate Template set
-    """
-    # Background predicate
-    # NOTE: here, num_background == real background + True + False
-    create_predicate_labels=False
-    idx_background=[i for i in range(num_background)]
-    if predicates_labels is None:
-        create_predicate_labels=True
-        predicates_labels=["init_0."+str(i) for i in range(num_background)] # for vis
-
-    #Rule structure, arity for intensional predicates BEWARE, depth for all predicates here!
-    rules_str, rules_arity, depth_predicates =[],[], [0 for i in range(num_background)]
-
-    for depth in range(1,max_depth+1):#max_depth is supposedly the tgt arity depth
-
-        #sample subset unary and binary predicate here with replacement if num_sample>...
-        if num_sample==0: #Take exactly then the full template set
-            sample_unary=templates_unary
-        elif num_sample>len(templates_unary):
-            sample_unary=random.choices(templates_unary,k=num_sample)
-        else:
-            sample_unary=random.sample(templates_unary,num_sample)
-        if num_sample==0:
-            sample_binary=templates_binary
-        elif num_sample>len(templates_binary):
-            sample_binary=random.choices(templates_binary,k=num_sample)
-        else:
-            sample_binary=random.sample(templates_binary,num_sample)
-
-        if depth==max_depth:
-            if tgt_arity==1:#at last depth, only add predicate from same arity
-                rules_str.extend(sample_unary)
-                depth_predicates.extend([depth for i in range(len(sample_unary))])
-                rules_arity.extend([1 for i in range(len(sample_unary))])
-                if create_predicate_labels:
-                    predicates_labels.extend(["un_"+str(depth)+"."+str(i) for i in range(len(sample_unary))])
-            else:
-                rules_str.extend(sample_binary)
-                depth_predicates.extend([depth for i in range(len(sample_binary))])
-                rules_arity.extend([2 for i in range(len(sample_binary))])
-                if create_predicate_labels:
-                    predicates_labels.extend(["bi_"+str(depth)+"."+str(i) for i in range(len(sample_binary))])
-            #add tgt predicate
-            rules_str.append("TGT")
-            depth_predicates.append(max_depth)
-            rules_arity.append(tgt_arity)
-            predicates_labels.append("tgt")
-        else:
-            rules_str.extend(sample_unary)
-            rules_str.extend(sample_binary)
-            depth_predicates.extend([depth for i in range(len(sample_unary)+len(sample_binary))])
-            rules_arity.extend([1 for i in range(len(sample_unary))])
-            rules_arity.extend([2 for i in range(len(sample_binary))])
-            if create_predicate_labels:
-                predicates_labels.extend(["un_"+str(depth)+"."+str(i) for i in range(len(sample_unary))])
-                predicates_labels.extend(["bi_"+str(depth)+"."+str(i) for i in range(len(sample_binary))])
-
-    idx_auxiliary=[num_background+i for i in range(len(rules_str))]#one aux predicate for each rule
-
-    return (idx_background, idx_auxiliary, rules_str, predicates_labels, rules_arity, depth_predicates)
-
-
-
 #-------------create templates
 
 def create_template_plain(num_background, tgt_arity, templates_unary, templates_binary, predicates_labels=None):
     """
-        Precise the number of predicates and The arity of the target predicates.
-        And create corresponding Template Set
+        Initialise template set, case not Hierarchical model.
+         Inputs:
+            num_background: number background predicates
+            tgt_arity: arity of the target predicate, int
+            templates_unary: list of the possible unary templates (templates whose head predicate is unary)
+            templates_binary: list of the possible binary templates
+
+        Outputs:
+            idx_background: list indices of background predicates
+            idx_auxiliary: list indices of auxiliary predicates
+            rules_str: list rule structure (templates)
+            predicates_labels: list predicates labels
+            rules_arity: list rules arity
     """
     #Background predicate
     # NOTE: here, num_background == real background + True + False
@@ -390,46 +347,117 @@ def create_template_plain(num_background, tgt_arity, templates_unary, templates_
 
 
 
+######## PROCEDURES BELOW ARE FOR PROGRESSIVE MODEL !
 
-def init_symbolic_valuation(model, valuation_background, num_constants, steps=1):
-    """
-    Initialise symbolic valuation, for this, as if do several inference steps, with template structure.
-    Since templates may be recursive.
-    """
-    #NOTE: artificially add 1 because of infer procedure which expect one dimension more than needed for unifs...    
-    num_predicates=model.num_all_symbolic_predicates+1 #here only consider initial & symbolic pred...
-    num_rules=model.num_symbolic_predicates+1 #here symbolic rule consider.
-
-    with torch.no_grad():
-        #--sym_unifs from symbolic rules...
-        sym_unifs=torch.zeros(num_predicates, model.num_body, num_rules)
-        for i, pred in enumerate(model.idx_symbolic_predicates):
-            bodies=model.symbolic_rules[i]
-            sym_unifs[bodies[0], 0, i]=1#
-            sym_unifs[bodies[1], 1, i]=1
-            is_extended=("+" in model.symbolic_rules_str[i])
-            if is_extended:
-                assert len(bodies)>1
-                sym_unifs[bodies[2], 2, i]=1
-
-        #remove tgt and square
-        sym_unifs_duo=torch.einsum('pr,qr->pqr', sym_unifs[:-1,0,:-1], sym_unifs[:-1,1,:-1]).view(-1,num_rules-1)
-        sym_unifs_duo=sym_unifs_duo.view(num_predicates-1, num_predicates-1, num_rules-1)
-
-        #---init valuation 
-        init_val=torch.zeros(num_rules-1, num_constants,num_constants)
-        valuation=torch.cat((valuation_background,init_val),dim=0)
+# def sample_template_hierarchical(num_background, max_depth, tgt_arity, templates_unary, templates_binary, predicates_labels=None, num_sample=0):
+#     """
+#         Initialise  Rule Templates for Hierarchical Model. Here Sample!
         
-        #---init mask for symbolic pred. #TODO: Save these masks?
-        mask_rule_permute_body1=torch.tensor([model.symbolic_rules_str[r] in ["A10+","A10","B10","B10+" ] for r in range(num_rules-1)]).double()
-        mask_rule_permute_body2=torch.tensor([model.symbolic_rules_str[r] in ["A01+","A01","B01","B01+"] for r in range(num_rules-1)]).double()
-        mask_rule_C=torch.tensor([model.symbolic_rules_str[r] in ["C+", "C", "C00+", "C00"] for r in range(num_rules-1)]).double()
-        mask_rule_arity1=torch.tensor([model.rules_arity[r]==1 for r in range(num_rules-1)]).double()
-        mask_extended_rule=torch.tensor(["+" in model.symbolic_rules_str[r] for r in range(num_rules-1)]).double()
+#     """
+#     # Background predicate
+#     # NOTE: here, num_background == real background + True + False
+#     create_predicate_labels=False
+#     idx_background=[i for i in range(num_background)]
+#     if predicates_labels is None:
+#         create_predicate_labels=True
+#         predicates_labels=["init_0."+str(i) for i in range(num_background)] # for vis
 
-        for step in range(steps):
-            valuation = infer_one_step_vectorise(model, valuation, num_constants, sym_unifs, sym_unifs_duo, permute_masks=[mask_rule_permute_body1,mask_rule_permute_body2], num_predicates=num_predicates, num_keep=model.num_background, num_rules=num_rules, masks=[mask_rule_C, mask_rule_arity1,mask_extended_rule])
+#     #Rule structure, arity for intensional predicates BEWARE, depth for all predicates here!
+#     rules_str, rules_arity, depth_predicates =[],[], [0 for i in range(num_background)]
+
+#     for depth in range(1,max_depth+1):#max_depth is supposedly the tgt arity depth
+
+#         #sample subset unary and binary predicate here with replacement if num_sample>...
+#         if num_sample==0: #Take exactly then the full template set
+#             sample_unary=templates_unary
+#         elif num_sample>len(templates_unary):
+#             sample_unary=random.choices(templates_unary,k=num_sample)
+#         else:
+#             sample_unary=random.sample(templates_unary,num_sample)
+#         if num_sample==0:
+#             sample_binary=templates_binary
+#         elif num_sample>len(templates_binary):
+#             sample_binary=random.choices(templates_binary,k=num_sample)
+#         else:
+#             sample_binary=random.sample(templates_binary,num_sample)
+
+#         if depth==max_depth:
+#             if tgt_arity==1:#at last depth, only add predicate from same arity
+#                 rules_str.extend(sample_unary)
+#                 depth_predicates.extend([depth for i in range(len(sample_unary))])
+#                 rules_arity.extend([1 for i in range(len(sample_unary))])
+#                 if create_predicate_labels:
+#                     predicates_labels.extend(["un_"+str(depth)+"."+str(i) for i in range(len(sample_unary))])
+#             else:
+#                 rules_str.extend(sample_binary)
+#                 depth_predicates.extend([depth for i in range(len(sample_binary))])
+#                 rules_arity.extend([2 for i in range(len(sample_binary))])
+#                 if create_predicate_labels:
+#                     predicates_labels.extend(["bi_"+str(depth)+"."+str(i) for i in range(len(sample_binary))])
+#             #add tgt predicate
+#             rules_str.append("TGT")
+#             depth_predicates.append(max_depth)
+#             rules_arity.append(tgt_arity)
+#             predicates_labels.append("tgt")
+#         else:
+#             rules_str.extend(sample_unary)
+#             rules_str.extend(sample_binary)
+#             depth_predicates.extend([depth for i in range(len(sample_unary)+len(sample_binary))])
+#             rules_arity.extend([1 for i in range(len(sample_unary))])
+#             rules_arity.extend([2 for i in range(len(sample_binary))])
+#             if create_predicate_labels:
+#                 predicates_labels.extend(["un_"+str(depth)+"."+str(i) for i in range(len(sample_unary))])
+#                 predicates_labels.extend(["bi_"+str(depth)+"."+str(i) for i in range(len(sample_binary))])
+
+#     idx_auxiliary=[num_background+i for i in range(len(rules_str))]#one aux predicate for each rule
+
+#     return (idx_background, idx_auxiliary, rules_str, predicates_labels, rules_arity, depth_predicates)
+
+
+
+# def init_symbolic_valuation(model, valuation_background, num_constants, steps=1):
+#     """
+#     Initialise symbolic valuation
+#     #NOTE:  as if do several inference steps, taking into account the template structure.
+#     Deduce their valuation given the valuation of the background predicates
     
-    return valuation
+#     Output:
+#         valuation: valuation of the symbolic predicates
+#     """
+#     #NOTE: artificially add 1 because of infer procedure which expect one dimension more than needed for unifs...    
+#     num_predicates=model.num_all_symbolic_predicates+1 #here only consider initial & symbolic pred...
+#     num_rules=model.num_symbolic_predicates+1 #here symbolic rule consider.
+
+#     with torch.no_grad():
+#         #--sym_unifs from symbolic rules...
+#         sym_unifs=torch.zeros(num_predicates, model.num_body, num_rules)
+#         for i, pred in enumerate(model.idx_symbolic_predicates):
+#             bodies=model.symbolic_rules[i]
+#             sym_unifs[bodies[0], 0, i]=1#
+#             sym_unifs[bodies[1], 1, i]=1
+#             is_extended=("+" in model.symbolic_rules_str[i])
+#             if is_extended:
+#                 assert len(bodies)>1
+#                 sym_unifs[bodies[2], 2, i]=1
+
+#         #remove tgt and square
+#         sym_unifs_duo=torch.einsum('pr,qr->pqr', sym_unifs[:-1,0,:-1], sym_unifs[:-1,1,:-1]).view(-1,num_rules-1)
+#         sym_unifs_duo=sym_unifs_duo.view(num_predicates-1, num_predicates-1, num_rules-1)
+
+#         #---init valuation 
+#         init_val=torch.zeros(num_rules-1, num_constants,num_constants)
+#         valuation=torch.cat((valuation_background,init_val),dim=0)
+        
+#         #---init mask for symbolic pred. #TODO: Save these masks?
+#         mask_rule_permute_body1=torch.tensor([model.symbolic_rules_str[r] in ["A10+","A10","B10","B10+" ] for r in range(num_rules-1)]).double()
+#         mask_rule_permute_body2=torch.tensor([model.symbolic_rules_str[r] in ["A01+","A01","B01","B01+"] for r in range(num_rules-1)]).double()
+#         mask_rule_C=torch.tensor([model.symbolic_rules_str[r] in ["C+", "C", "C00+", "C00"] for r in range(num_rules-1)]).double()
+#         mask_rule_arity1=torch.tensor([model.rules_arity[r]==1 for r in range(num_rules-1)]).double()
+#         mask_extended_rule=torch.tensor(["+" in model.symbolic_rules_str[r] for r in range(num_rules-1)]).double()
+
+#         for step in range(steps):
+#             valuation = infer_one_step_vectorise(model, valuation, num_constants, sym_unifs, sym_unifs_duo, permute_masks=[mask_rule_permute_body1,mask_rule_permute_body2], num_predicates=num_predicates, numFixedVal=model.num_background, num_rules=num_rules, masks=[mask_rule_C, mask_rule_arity1,mask_extended_rule])
+    
+#     return valuation
 
 

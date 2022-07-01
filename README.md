@@ -24,7 +24,7 @@ Navigate to Grandparent.py and utils/UniversalParam.py to see all the hyperparam
 
 ### Visual Genome tasks
 For Visual Genome tasks, we use the filtered sub-dataset named GQA which is used by [Learn to Explain Efficiently via Neural Logic Inductive Learning](https://openreview.net/forum?id=SJlh8CEYDB).
-Parts of the data files of GQA are in Data/gqa, but you will have to download the Scene Graphs ('train_sceneGraphs.json') from [here](https://cs.stanford.edu/people/dorarad/gqa/download.html) and place it in .HRI/Data/gqa/sceneGraphs/.
+Parts of the data files of GQA are in Data/gqa, but you will have to download the Scene Graphs from [here](https://cs.stanford.edu/people/dorarad/gqa/download.html) and place the unzipped folder in .HRI/Data/gqa/.
 Feel welcome to visit gqadataset.org for all information about the dataset, including examples, visualizations, paper and slides. 
 
 We run experiments on these VG tasks in both single-task setting (GQA.py) and multi-task setting (MT_GQA.py).

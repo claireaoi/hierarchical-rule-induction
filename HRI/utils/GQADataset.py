@@ -56,9 +56,12 @@ class PredReg:
         assert type(pred) is Predicate
 
         self.pred_dict[pred.name] = pred
-        sorted_name = sorted([pred_name for pred_name in self.pred_dict.keys()])
-        self.ind2pred = dict([(ind, pred_name) for ind, pred_name in enumerate(sorted_name)])
-        self.pred2ind = dict([(pred_name, ind) for ind, pred_name in enumerate(sorted_name)])
+        sorted_name = sorted(
+            [pred_name for pred_name in self.pred_dict.keys()])
+        self.ind2pred = dict([(ind, pred_name)
+                             for ind, pred_name in enumerate(sorted_name)])
+        self.pred2ind = dict([(pred_name, ind)
+                             for ind, pred_name in enumerate(sorted_name)])
         self.num_pred += 1
 
     def get_numargs(self, pred):
@@ -88,9 +91,12 @@ class PredReg:
 class GQADataHolder:
 
     def __init__(self, data_root):
-        self.val_sGraph = json.load(open(joinpath(data_root, 'val_sceneGraphs.json')))
-        self.train_sGraph = json.load(open(joinpath(data_root, 'train_sceneGraphs.json')))
-        self.all_sGraph = dict([(k, v) for k, v in list(self.val_sGraph.items()) + list(self.train_sGraph.items())])
+        self.val_sGraph = json.load(
+            open(joinpath(data_root, 'val_sceneGraphs.json')))
+        self.train_sGraph = json.load(
+            open(joinpath(data_root, 'train_sceneGraphs.json')))
+        self.all_sGraph = dict([(k, v) for k, v in list(
+            self.val_sGraph.items()) + list(self.train_sGraph.items())])
         self.img_dir = joinpath(data_root, 'images')
 
         # self.obj2name, self.name2obj = {}, {}
@@ -124,9 +130,11 @@ class GQADataHolder:
 
         rel_dict = dict()
 
-        name_set = {v['name'] for k,v in img_obj_dict.items()}  # get all obj names in this scene graph
+        # get all obj names in this scene graph
+        name_set = {v['name'] for k, v in img_obj_dict.items()}
         if filter_set is not None:
-            if not all([obj in name_set for obj in filter_set]):  # filter graphs that contains other objects
+            # filter graphs that contains other objects
+            if not all([obj in name_set for obj in filter_set]):
                 return rel_dict
 
         for sub_id, sub_info in img_obj_dict.items():
@@ -142,7 +150,8 @@ class GQADataHolder:
                 assert rel_obj_id in img_obj_dict
 
                 if filter_set is not None:
-                    should_proceed = (rel_name in filter_set) or (img_obj_dict[rel_obj_id]['name'] in filter_set)
+                    should_proceed = (rel_name in filter_set) or (
+                        img_obj_dict[rel_obj_id]['name'] in filter_set)
                     if not should_proceed:
                         continue
 
@@ -165,11 +174,12 @@ def prep_gqa_data(root_path, data_root, domain_path, all_domain_path, filter_und
     origin_domain_path = domain_path
 
     if not os.path.exists(domain_path):
-            os.mkdir(domain_path)
-            os.mkdir(all_domain_path)
-            print('Processing GQA dataset...')
+        os.mkdir(domain_path)
+        os.mkdir(all_domain_path)
+        print('Processing GQA dataset...')
     else:
-        warnings.warn(f"{domain_path} has existed, stop preparing GQA data since it has been done!!!!!")
+        warnings.warn(
+            f"{domain_path} has existed, stop preparing GQA data since it has been done!!!!!")
         return
 
     gqa = GQADataHolder(data_root)
@@ -202,7 +212,8 @@ def prep_gqa_data(root_path, data_root, domain_path, all_domain_path, filter_und
                 freq_dict[name] += freq
             else:
                 freq_dict[name] = freq
-    un_filterSet.update([k for k, v in freq_dict.items() if v < filter_under])  # the set of filtered objects
+    # the set of filtered objects
+    un_filterSet.update([k for k, v in freq_dict.items() if v < filter_under])
 
     freq_dict = {}
     with open(joinpath(root_path, 'rel_freq.txt')) as f:
@@ -217,7 +228,8 @@ def prep_gqa_data(root_path, data_root, domain_path, all_domain_path, filter_und
                 freq_dict[name] += freq
             else:
                 freq_dict[name] = freq
-    rel_filterSet.update([k for k, v in freq_dict.items() if v < filter_under])  # the set of filtered relations
+    # the set of filtered relations
+    rel_filterSet.update([k for k, v in freq_dict.items() if v < filter_under])
 
     # num_domains = len(gqa.all_sGraph)
     un_pred_set, bi_pred_set = set(), set()
@@ -228,7 +240,8 @@ def prep_gqa_data(root_path, data_root, domain_path, all_domain_path, filter_und
         objs_dict = sgraph['objects']
         # NOTE: rel_dict is a dictionary about relations in this scene graph,
         #       each relation corresponds to a list of [sub_id, obj_id]
-        rel_dict = gqa.get_flatRel(img_id, filter_lr=True)  # NOTE: here haven't filtered out relations or predicates
+        # NOTE: here haven't filtered out relations or predicates
+        rel_dict = gqa.get_flatRel(img_id, filter_lr=True)
         fact_set = set()
 
         for rel_name, sub_obj_id_ls in rel_dict.items():
@@ -241,7 +254,7 @@ def prep_gqa_data(root_path, data_root, domain_path, all_domain_path, filter_und
                 obj_name = un_mergDict[obj_name] if obj_name in un_mergDict else obj_name
                 if (sub_name in un_filterSet) or (obj_name in un_filterSet):
                     continue
-                if filter_indirect and target != 'MT' and sub_name!=target and obj_name!=target:
+                if filter_indirect and target != 'MT' and sub_name != target and obj_name != target:
                     continue
 
                 rel_name = rel_mergDict[rel_name] if rel_name in rel_mergDict else rel_name
@@ -268,6 +281,7 @@ def prep_gqa_data(root_path, data_root, domain_path, all_domain_path, filter_und
         with open(joinpath(origin_domain_path, 'pred.txt'), 'a') as f:
             f.write('%s\n' % pn)
 
+
 def preprocess_withDomain(pred_register, pred_path, fact_path_ls, ent_path_ls=None):
     pred_reg = re.compile(r'([\w-]+)\(([^)]+)\)')
     # pred_register = PredReg()
@@ -278,11 +292,11 @@ def preprocess_withDomain(pred_register, pred_path, fact_path_ls, ent_path_ls=No
         m = pred_reg.match(line)
 
         # TensorLog data
-        if m is None: # True for WN dataset
+        if m is None:  # True for WN dataset
             pred_name = line
-            pred_name = pred_name.replace('.', 'DoT') # deal with fb15k
+            pred_name = pred_name.replace('.', 'DoT')  # deal with fb15k
             var_types = ['type', 'type']
-        else: # True for gqa dataset
+        else:  # True for gqa dataset
             pred_name = m.group(1)
             var_types = m.group(2).split(',')
 
@@ -312,23 +326,25 @@ def preprocess_withDomain(pred_register, pred_path, fact_path_ls, ent_path_ls=No
         const2ind_dict = {} if const2ind_dict is None else const2ind_dict
         ind2const_dict = {} if ind2const_dict is None else ind2const_dict
         # TODO: fact_dict is {}?
-        fact_dict = dict([(pn, []) for pn in pred_register.pred_dict.keys()]) if keep_empty else {}
+        fact_dict = dict(
+            [(pn, []) for pn in pred_register.pred_dict.keys()]) if keep_empty else {}
 
         if verbose:
-            v = lambda x: tqdm(x)
+            def v(x): return tqdm(x)
         else:
-            v = lambda x: x
+            def v(x): return x
 
-        for fp in fp_ls: # fact_path_list
+        for fp in fp_ls:  # fact_path_list
             for line in v(iterline(fp)):
                 parts = line.split('\t')
                 # TensorLog case
-                if len(parts) == 3: # WN18
+                if len(parts) == 3:  # WN18
                     val = 1
                     e1, pred_name, e2 = parts
-                    pred_name = pred_name.replace('.', 'DoT')  # deal with fb15k
+                    pred_name = pred_name.replace(
+                        '.', 'DoT')  # deal with fb15k
                     consts = [e1, e2]
-                else: # GQA
+                else:  # GQA
                     val = int(parts[0])
                     m = pred_reg.match(parts[1])
                     assert m is not None
@@ -340,15 +356,16 @@ def preprocess_withDomain(pred_register, pred_path, fact_path_ls, ent_path_ls=No
                     continue
 
                 for const in consts:
-                    if const not in const2ind_dict: # 补充所有在fact中出现但在ent中没有出现过的entity
+                    if const not in const2ind_dict:  # 补充所有在fact中出现但在ent中没有出现过的entity
                         ind2const_dict[len(const2ind_dict)] = const
                         const2ind_dict[const] = len(const2ind_dict)
 
-                fact = (val, tuple(consts)) # TODO: val: whether a fact exists or is true?
-                
-                if pred_name in fact_dict: # NOTE: fact_dict, all facts for each predicate in pred.txt
+                # TODO: val: whether a fact exists or is true?
+                fact = (val, tuple(consts))
+
+                if pred_name in fact_dict:  # NOTE: fact_dict, all facts for each predicate in pred.txt
                     fact_dict[pred_name].append(fact)
-                else: # 补充所有在fact中出现但在ent中没有出现过的fact
+                else:  # 补充所有在fact中出现但在ent中没有出现过的fact
                     fact_dict[pred_name] = [fact]
 
                 if pred_register.is_unp(pred_name):
@@ -366,11 +383,13 @@ def preprocess_withDomain(pred_register, pred_path, fact_path_ls, ent_path_ls=No
 
         return Domain(unp_ls, bip_ls, const2ind_dict, ind2const_dict, fact_dict)
 
-    pred2domain_dict = dict((pred_name, []) for pred_name in pred_register.pred_dict)
+    pred2domain_dict = dict((pred_name, [])
+                            for pred_name in pred_register.pred_dict)
     # a single file containing all facts, e.g. FB15K, WN18
     if os.path.isfile(fact_path_ls[0]):
         tqdm.write('Processing Single Domain..')
-        d = parse_fact(fact_path_ls, global_const2ind, global_ind2const, verbose=True)
+        d = parse_fact(fact_path_ls, global_const2ind,
+                       global_ind2const, verbose=True)
         d.name = 'default'
         for k in pred2domain_dict.keys():
             # NOTE: assocate each predicate with this domain
@@ -383,19 +402,20 @@ def preprocess_withDomain(pred_register, pred_path, fact_path_ls, ent_path_ls=No
         for fn in tqdm(os.listdir(fact_path_ls[0])):
             d = parse_fact([joinpath(fact_path_ls[0], fn)], global_const2ind, global_ind2const,
                            keep_empty=cmd_args.keep_empty)
-            d.name = fn # NOTE: for GQA, 1 file <-> 1 domain
-            
+            d.name = fn  # NOTE: for GQA, 1 file <-> 1 domain
+
             if (len(d.unp_ls) == 0) or (len(d.bip_ls) == 0):
                 tqdm.write('skip %s for zero-length unp or bip ls' % fn)
                 continue
             for pn in d.unp_ls + d.bip_ls:
                 # pred2domain: all file (value) contain the pn predicate (key)
-                pred2domain_dict[pn].append(d) 
+                pred2domain_dict[pn].append(d)
 
     else:
         raise ValueError
 
     return pred2domain_dict
+
 
 class Domain:
 
@@ -423,27 +443,31 @@ class Domain:
             unp_array of (num_unp, num_const, 1)
             bip_array of (num_bip, num_const, num_const)
         """
-        
+
         if (self.unp_arr_ls is not None) and (self.bip_arr_ls is not None) and (not update):
             return self.unp_arr_ls, self.bip_arr_ls
 
-        num_unp, num_bip, num_const = len(self.unp_ls), len(self.bip_ls), len(self.const2ind_dict)
+        num_unp, num_bip, num_const = len(self.unp_ls), len(
+            self.bip_ls), len(self.const2ind_dict)
 
         # unp_arr_ls = [torch.zeros(num_const, 1, device=cmd_args.device) for _ in range(num_unp)]
-        unp_arr_ls = [torch.zeros(num_const).view(-1, 1) for _ in range(num_unp)]
+        unp_arr_ls = [torch.zeros(num_const).view(-1, 1)
+                      for _ in range(num_unp)]
 
         for ind, unp in enumerate(self.unp_ls):
             for val, consts in self.fact_dict[unp]:
-                entry_inds = tuple([self.const2ind_dict[const] for const in consts])
+                entry_inds = tuple([self.const2ind_dict[const]
+                                   for const in consts])
                 unp_arr_ls[ind][entry_inds] = val
 
         # TODO: if have memory issue, may try with sparse mat like NLIL
         bip_arr_ls = [torch.zeros((num_const, num_const)) for _ in range(num_bip - 1)] + \
-                        [torch.eye(num_const)]  # the last one is ident predicate
+            [torch.eye(num_const)]  # the last one is ident predicate
 
         for ind, bip in enumerate(self.bip_ls[:-1]):
             for val, consts in self.fact_dict[bip]:
-                entry_inds = tuple([self.const2ind_dict[const] for const in consts])
+                entry_inds = tuple([self.const2ind_dict[const]
+                                   for const in consts])
                 bip_arr_ls[ind][entry_inds] = val
 
         if keep_array:
@@ -452,8 +476,9 @@ class Domain:
 
         return unp_arr_ls, bip_arr_ls
 
+
 class PredDomain:
-    
+
     def __init__(self, pred_name, domain):
         self.pred_name = pred_name
         self.domain = domain
@@ -471,27 +496,32 @@ class DomainDataset:
         if 'gqa' in task.lower():
             self.sg_path_ls = joinpath(dataset_path, 'all_domains')
 
-            self.pred_reg = re.compile(r'([\w-]+)\(([^)]+)\)')  # TODO: may use a simpler formulation
+            # TODO: may use a simpler formulation
+            self.pred_reg = re.compile(r'([\w-]+)\(([^)]+)\)')
             self.TYPE_SET = set()
 
             self.pred_type_all_dict = {}  # k: predicates name  v: type
+            print("PRED PATH {}".format(pred_path))
             self.get_pred_type_all(pred_path)
-            
-            self.filter = GQAFilter(all_domain_path=self.sg_path_ls, count_min=count_min, count_max=count_max)
-            
+
+            self.filter = GQAFilter(
+                all_domain_path=self.sg_path_ls, count_min=count_min, count_max=count_max)
+
             self.get_pred_filtered()
-            
-            print(f'{len(self.pred_register.pred2ind)} background predicates: {self.pred_register.pred2ind.keys()}')
-            
+
+            print(
+                f'{len(self.pred_register.pred2ind)} background predicates: {self.pred_register.pred2ind.keys()}')
+
             self.len_train_file_ids = int(len(self.filter.filtered_ids) * 0.8)
             self.len_val_file_ids = int(len(self.filter.filtered_ids) * 0.1)
-            self.len_test_file_ids = len(self.filter.filtered_ids) - self.len_train_file_ids - self.len_val_file_ids
-            
+            self.len_test_file_ids = len(
+                self.filter.filtered_ids) - self.len_train_file_ids - self.len_val_file_ids
+
             print(f'{self.len_train_file_ids} scene graphs for training, \
                     {self.len_val_file_ids} scene graphs for validation, \
                     {self.len_test_file_ids} scene graphs for test')
-        
-        else: # 'wn' task
+
+        else:  # 'wn' task
             fact_path_ls = [joinpath(dataset_path, 'fact.txt')]
             if os.path.isfile(joinpath(dataset_path, 'train.txt')):
                 fact_path_ls.append(joinpath(dataset_path, 'train.txt'))
@@ -501,27 +531,36 @@ class DomainDataset:
                 ent_path_ls = [joinpath(dataset_path, 'ent.txt')]
             else:
                 ent_path_ls = None
-            
-            self.fact_pred2domain_dict = preprocess_withDomain(self.pred_register, pred_path, fact_path_ls, ent_path_ls)
-            self.valid_pred2domain_dict = preprocess_withDomain(self.pred_register, pred_path, valid_path_ls, ent_path_ls)
-            self.test_pred2domain_dict = preprocess_withDomain(self.pred_register, pred_path, test_path_ls, ent_path_ls)
+
+            self.fact_pred2domain_dict = preprocess_withDomain(
+                self.pred_register, pred_path, fact_path_ls, ent_path_ls)
+            self.valid_pred2domain_dict = preprocess_withDomain(
+                self.pred_register, pred_path, valid_path_ls, ent_path_ls)
+            self.test_pred2domain_dict = preprocess_withDomain(
+                self.pred_register, pred_path, test_path_ls, ent_path_ls)
 
     def refresh_dataset(self, filter_constants=1500, split_depth=2):
         while True:
             print('Shuffling dataset...')
             random.shuffle(self.filter.filtered_ids)
             train_file_ids = self.filter.filtered_ids[:self.len_train_file_ids]
-            val_file_ids = self.filter.filtered_ids[self.len_train_file_ids:self.len_train_file_ids+self.len_val_file_ids]
-            test_file_ids = self.filter.filtered_ids[self.len_train_file_ids+self.len_val_file_ids:]
-            self.fact_pred2domain_dict = self.preprocess_withDomain(self.sg_path_ls, train_file_ids, filter_constants=filter_constants, split_depth=split_depth)
-            if len(self.fact_pred2domain_dict) < len(self.pred_register.pred_dict):  # make sure fact set contains facts about all bgs
+            val_file_ids = self.filter.filtered_ids[self.len_train_file_ids:
+                                                    self.len_train_file_ids+self.len_val_file_ids]
+            test_file_ids = self.filter.filtered_ids[self.len_train_file_ids +
+                                                     self.len_val_file_ids:]
+            self.fact_pred2domain_dict = self.preprocess_withDomain(
+                self.sg_path_ls, train_file_ids, filter_constants=filter_constants, split_depth=split_depth)
+            # make sure fact set contains facts about all bgs
+            if len(self.fact_pred2domain_dict) < len(self.pred_register.pred_dict):
                 continue
             else:
-                self.valid_pred2domain_dict = self.preprocess_withDomain(self.sg_path_ls, val_file_ids, filter_constants=filter_constants, split_depth=split_depth)
-                self.test_pred2domain_dict = self.preprocess_withDomain(self.sg_path_ls, test_file_ids, filter_constants=filter_constants, split_depth=split_depth)
+                self.valid_pred2domain_dict = self.preprocess_withDomain(
+                    self.sg_path_ls, val_file_ids, filter_constants=filter_constants, split_depth=split_depth)
+                self.test_pred2domain_dict = self.preprocess_withDomain(
+                    self.sg_path_ls, test_file_ids, filter_constants=filter_constants, split_depth=split_depth)
                 print('Shuffled done!')
                 break
-        
+
     def get_pred_type_all(self, pred_path):
 
         for line in iterline(pred_path):
@@ -542,7 +581,8 @@ class DomainDataset:
     def get_pred_filtered(self):
         bgs_name = list(sorted(self.filter.get_bgs()))
         for name in bgs_name:
-            self.pred_register.add(Predicate(name, self.pred_type_all_dict[name]))
+            self.pred_register.add(
+                Predicate(name, self.pred_type_all_dict[name]))
         if 'ident' not in self.pred_register.pred_dict:
             self.pred_register.add(Predicate('ident', ['type', 'type']))
 
@@ -563,9 +603,9 @@ class DomainDataset:
             fact_dict = {}
 
             if verbose:
-                v = lambda x: tqdm(x)
+                def v(x): return tqdm(x)
             else:
-                v = lambda x: x
+                def v(x): return x
 
             for fp in fp_ls:  # fp are files in fact_domains directory
                 for line in v(iterline(fp)):
@@ -577,11 +617,12 @@ class DomainDataset:
 
                     pred_name = m.group(1)  # predicate name
                     consts = m.group(2).split(',')  # objects
-                    
+
                     if pred_name not in self.pred_register.pred_dict:
-                        warnings.warn(f'In file {fp}, {pred_name} is not in pred_register.')
+                        warnings.warn(
+                            f'In file {fp}, {pred_name} is not in pred_register.')
                         continue
-                    
+
                     for const in consts:
                         if const not in const2ind_dict:  # map objects to a continuous sequence
                             ind2const_dict[len(const2ind_dict)] = const
@@ -603,10 +644,11 @@ class DomainDataset:
             bip_ls = list(sorted(bip_set))
             # one scene graph, corresponding to one domain
             # here xxp_ls are sorted
-            return Domain(unp_ls, bip_ls, const2ind_dict, ind2const_dict, fact_dict) 
+            return Domain(unp_ls, bip_ls, const2ind_dict, ind2const_dict, fact_dict)
 
-        pred2domain_dict = dict((pred_name, []) for pred_name in self.pred_register.pred_dict)
-        
+        pred2domain_dict = dict((pred_name, [])
+                                for pred_name in self.pred_register.pred_dict)
+
         tqdm.write('Processing Multiple Domains..')
         # pdb.set_trace()
         for fn in tqdm(fact_file_ids):
@@ -619,7 +661,8 @@ class DomainDataset:
                 for pn in d.unp_ls + d.bip_ls:  # pn = predicate name
                     pred2domain_dict[pn].append(d)
             else:
-                sub_domain_ls = split_domain(d, filter_constants=filter_constants, split_depth=split_depth)
+                sub_domain_ls = split_domain(
+                    d, filter_constants=filter_constants, split_depth=split_depth)
                 for sub_d in sub_domain_ls:
                     for pn in sub_d.unp_ls + sub_d.bip_ls:  # pn = predicate name
                         pred2domain_dict[pn].append(sub_d)
@@ -633,7 +676,7 @@ def split_domain(domain, filter_constants, split_depth):
     for unp in domain.unp_ls:
         for _, consts in domain.fact_dict[unp]:
             const2unp[consts[0]] = unp
-    
+
     # pdb.set_trace()
     domain_ls = []
     for unp in domain.unp_ls:  # for each target, create a subgraph
@@ -646,7 +689,7 @@ def split_domain(domain, filter_constants, split_depth):
 
             q = deque()
             q.append((consts[0], 0, unp))  # const_id, depth=0
-            
+
             cnt = 0
             while len(q):  # queue is not empty
                 const_1, depth, unp_1 = q.popleft()
@@ -671,10 +714,11 @@ def split_domain(domain, filter_constants, split_depth):
                         if const_1 in cand_consts:
                             # print('---')
                             # print(const_1)
-                            another_const = cand_consts[0] if cand_consts[1]==const_1 else cand_consts[1]
+                            another_const = cand_consts[0] if cand_consts[1] == const_1 else cand_consts[1]
                             sub_bip_set.add(bip)
                             if bip in sub_fact_dict:
-                                sub_fact_dict[bip].append((cand_val, cand_consts))
+                                sub_fact_dict[bip].append(
+                                    (cand_val, cand_consts))
                             else:
                                 sub_fact_dict[bip] = [(cand_val, cand_consts)]
                             cand_unp = const2unp[another_const]
@@ -683,6 +727,7 @@ def split_domain(domain, filter_constants, split_depth):
             # pdb.set_trace()
             sub_unp_ls = list(sorted(sub_unp_set))
             sub_bip_ls = list(sorted(sub_bip_set))
-            domain_ls.append(Domain(sub_unp_ls, sub_bip_ls, sub_const2ind_dict, sub_ind2const_dict, sub_fact_dict))
+            domain_ls.append(Domain(
+                sub_unp_ls, sub_bip_ls, sub_const2ind_dict, sub_ind2const_dict, sub_fact_dict))
 
-    return domain_ls      
+    return domain_ls

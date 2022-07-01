@@ -370,7 +370,7 @@ def add_universal_parameters(parser):
         '--add_p0',
         default=True,
         type=str2bool,
-        help="whether add p0 for model"
+        help="whether add True, False for model"
     )
 
     # TODO: maybe different noise weights for different bodies

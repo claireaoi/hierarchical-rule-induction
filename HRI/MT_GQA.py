@@ -345,19 +345,19 @@ core_group.add_argument(
     help='scale for the OR score when extended rule'
 )
 #--------progressive Model-----------------------
-prog_group = parser.add_argument_group('Progressive model')
-prog_group.add_argument(
-    '--use_progressive_model', 
-    default=False,
-    type=str2bool,
-    help='if use progressive model'
-    )
-prog_group.add_argument(
-    '--with_permutation', 
-    default=False,
-    type=str2bool,
-    help='if use permutation of given templates'
-    )
+# prog_group = parser.add_argument_group('Progressive model')
+# prog_group.add_argument(
+#     '--use_progressive_model', 
+#     default=False,
+#     type=str2bool,
+#     help='if use progressive model'
+#     )
+# prog_group.add_argument(
+#     '--with_permutation', 
+#     default=False,
+#     type=str2bool,
+#     help='if use permutation of given templates'
+#     )
 
 parser.add_argument('--task_name', default='MT_GQA', type=str, choices=['MT_GQA'], help='task name')  # multi-task GQA
 parser.add_argument('--train_steps', default=4, type=int, help='inference(forward) step for training')
@@ -420,7 +420,7 @@ parser.add_argument('--gqa_eval_split_id', default=0, type=int, help='the curren
 # eval all using LHPO
 parser.add_argument('--gqa_eval_lhpo', default=False, type=str2bool, help='True if use LHPO to evaluate all model')
 
-parser.add_argument('--fix_gumbel', default=False, type=str2bool)
+# parser.add_argument('--fix_gumbel', default=False, type=str2bool)
 args = parser.parse_args()
 if not args.no_log:
     sys.stdout = Logger(task_name=args.task_name, stream=sys.stdout, path=args.log_dir)
@@ -437,8 +437,6 @@ if __name__ == '__main__':
             args.loss_tag += f'_randomIPP{args.gqa_random_iter_per_round}'
         if args.gqa_split_domain:
             args.loss_tag += f'_splitD{args.gqa_split_depth}'
-        if args.fix_gumbel:
-            args.loss_tag += f'fixgumbel'
     exp = LearnMultiTasks(args)
     exp.run()
     

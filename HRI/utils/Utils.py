@@ -7,7 +7,7 @@ import math
 import numpy as np
 import random
 
-def sample_gumbel(shape, scale, eps, fix_gumbel):
+def sample_gumbel(shape, scale, eps):
     """
     Gumbel sample
     """
@@ -15,11 +15,11 @@ def sample_gumbel(shape, scale, eps, fix_gumbel):
     U = -torch.log(-torch.log(U+eps)+eps)
     return U
 
-def gumbel_softmax_sample(logits, tau, scale, fix_gumbel, eps=1e-20, use_gpu=False):
+def gumbel_softmax_sample(logits, tau, scale, eps=1e-20, use_gpu=False):
     """
     Gumbel softmax
     """
-    samp = sample_gumbel(logits.size(), scale, eps, fix_gumbel)
+    samp = sample_gumbel(logits.size(), scale, eps)
     if use_gpu:
         samp = samp.cuda()
     y = logits + samp #add noise 
@@ -174,7 +174,7 @@ def get_unifs(rules, embeddings, args=None, mask=None, temperature=None, gumbel_
         unifs = nn.Softmax(dim=0)(sim / temperature).view(-1)
     elif args.softmax == "gumbel":
         unifs = gumbel_softmax_sample(
-            sim, temperature, gumbel_noise, use_gpu=args.use_gpu, fix_gumbel=args.fix_gumbel).view(-1)
+            sim, temperature, gumbel_noise, use_gpu=args.use_gpu).view(-1)
     elif args.softmax == "none":
         unifs = sim
         #TODO: Could clamp simiarlity instead of parameters!

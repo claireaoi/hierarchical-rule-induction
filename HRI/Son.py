@@ -47,7 +47,6 @@ if not args.no_log:
     sys.stdout = Logger(task_name=args.task_name, stream=sys.stdout, path=args.log_dir)
 
 if __name__ == '__main__':
-
     exp = Learn(args)
     exp.run()
     

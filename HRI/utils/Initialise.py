@@ -164,9 +164,9 @@ def init_aux_valuation(model, valuation_init, num_constants, steps=1):
             valuation.insert(0, Variable(val_false))
             valuation.insert(0, Variable(val_true))
 
-        #---add aux symbolic predicates valuation for progressive model
-        if model.args.use_progressive_model and model.args.symbolic_library_size>0 and model.num_symbolic_predicates>0:
-            valuation = init_symbolic_valuation(model, valuation, num_constants, steps=steps)
+        # #---add aux symbolic predicates valuation for progressive model
+        # if model.args.use_progressive_model and model.args.symbolic_library_size>0 and model.num_symbolic_predicates>0:
+        #     valuation = init_symbolic_valuation(model, valuation, num_constants, steps=steps)
         
         #add auxiliary predicates
         for pred in model.idx_soft_predicates:
@@ -194,10 +194,10 @@ def init_aux_valuation(model, valuation_init, num_constants, steps=1):
                 raise NotImplementedError
 
         #---add aux symbolic predicates valuation if need
-        if model.args.use_progressive_model and model.num_symbolic_predicates>0:#or model.args.symbolic_library_size>0
-            valuation_sym = init_symbolic_valuation(model, torch.stack(valuation_, dim=0), num_constants, steps=steps)
-        else:
-            valuation_sym=torch.stack(valuation_, dim=0)
+        # if model.args.use_progressive_model and model.num_symbolic_predicates>0:#or model.args.symbolic_library_size>0
+        #     valuation_sym = init_symbolic_valuation(model, torch.stack(valuation_, dim=0), num_constants, steps=steps)
+        # else:
+        valuation_sym=torch.stack(valuation_, dim=0)
         
         #---add aux predicates
         val_aux=Variable(torch.zeros((model.num_soft_predicates-1, num_constants, num_constants)))
@@ -214,10 +214,10 @@ def init_aux_valuation(model, valuation_init, num_constants, steps=1):
 #-------------create templates
 
 def init_rule_templates(args, num_background=1, max_depth=0, tgt_arity=1, templates_unary=[], templates_binary=[], predicates_labels=None):
-    if args.hierarchical and args.use_progressive_model and args.num_pred_per_arity>0:
-        #Here sample from template set
-        tuplet=sample_template_hierarchical(num_background, max_depth, tgt_arity, templates_unary, templates_binary, predicates_labels=predicates_labels, num_sample=args.num_pred_per_arity)
-    elif args.hierarchical:
+    # if args.hierarchical and args.use_progressive_model and args.num_pred_per_arity>0:
+    #     #Here sample from template set
+    #     tuplet=sample_template_hierarchical(num_background, max_depth, tgt_arity, templates_unary, templates_binary, predicates_labels=predicates_labels, num_sample=args.num_pred_per_arity)
+    if args.hierarchical:
         #here take full template set at each depth
         tuplet=create_template_hierarchical(num_background, max_depth, tgt_arity, templates_unary, templates_binary, args.add_p0, predicates_labels=predicates_labels)
     else:

@@ -42,30 +42,30 @@ def update_permutation_masks(model, num_rules_no_tgt=0):
     if num_rules_no_tgt==0:
         num_rules_no_tgt=model.num_rules-1 #beware not for multi task remove tgt in num rules
 
-    if model.args.use_progressive_model:
-        #NOTE: different template types for progressive model
-        if model.args.with_permutation and model.args.learn_permutation:
-            #NOTE: Here SOFT MASK
-            #rules for which will need permute first body...and coefficient. 
-            model.mask_rule_permute_body1 = nn.Sigmoid()(model.permutation_parameters.squeeze()[:-1]) * torch.tensor([(model.rules_str[r] in ["A+"]) for r in range(num_rules_no_tgt)]).float()
-            #rules for which will need permute second body:
-            model.mask_rule_permute_body2 = nn.Sigmoid()(model.permutation_parameters.squeeze()[:-1]) * torch.tensor([(model.rules_str[r] in ["B+"]) for r in range(num_rules_no_tgt)]).float()
-        elif model.args.with_permutation:#here do not learn the coefficients model.permutation_parameters but still exist
-            #NOTE: Here HARD MASK
-            #Or with torch.round?
-            permutation_mask=(model.permutation_parameters.squeeze()[:-1]>=0)
-            model.mask_rule_permute_body1 = permutation_mask.float() * torch.tensor([(model.rules_str[r] in ["A+"]) for r in range(num_rules_no_tgt)]).float()
-            #rules for which will need permute second body:
-            model.mask_rule_permute_body2 = permutation_mask.float() * torch.tensor([(model.rules_str[r] in ["B+"]) for r in range(num_rules_no_tgt)]).float()
-        else:
-            #HERE Null Mask, ie do not permute
-            model.mask_rule_permute_body1=torch.zeros((num_rules_no_tgt))
-            model.mask_rule_permute_body2=torch.zeros((num_rules_no_tgt))
-    else:
-        #rules for which will need permute first body:
-        model.mask_rule_permute_body1 = torch.tensor([model.rules_str[r] in ["A10+","A10","B10","B10+" ] for r in range(num_rules_no_tgt)]).double()
-        #rules for which will need permute second body:
-        model.mask_rule_permute_body2 = torch.tensor([model.rules_str[r] in ["A01+","A01","B01","B01+"] for r in range(num_rules_no_tgt)]).double()
+    # if model.args.use_progressive_model:
+    #     #NOTE: different template types for progressive model
+    #     if model.args.with_permutation and model.args.learn_permutation:
+    #         #NOTE: Here SOFT MASK
+    #         #rules for which will need permute first body...and coefficient. 
+    #         model.mask_rule_permute_body1 = nn.Sigmoid()(model.permutation_parameters.squeeze()[:-1]) * torch.tensor([(model.rules_str[r] in ["A+"]) for r in range(num_rules_no_tgt)]).float()
+    #         #rules for which will need permute second body:
+    #         model.mask_rule_permute_body2 = nn.Sigmoid()(model.permutation_parameters.squeeze()[:-1]) * torch.tensor([(model.rules_str[r] in ["B+"]) for r in range(num_rules_no_tgt)]).float()
+    #     elif model.args.with_permutation:#here do not learn the coefficients model.permutation_parameters but still exist
+    #         #NOTE: Here HARD MASK
+    #         #Or with torch.round?
+    #         permutation_mask=(model.permutation_parameters.squeeze()[:-1]>=0)
+    #         model.mask_rule_permute_body1 = permutation_mask.float() * torch.tensor([(model.rules_str[r] in ["A+"]) for r in range(num_rules_no_tgt)]).float()
+    #         #rules for which will need permute second body:
+    #         model.mask_rule_permute_body2 = permutation_mask.float() * torch.tensor([(model.rules_str[r] in ["B+"]) for r in range(num_rules_no_tgt)]).float()
+    #     else:
+    #         #HERE Null Mask, ie do not permute
+    #         model.mask_rule_permute_body1=torch.zeros((num_rules_no_tgt))
+    #         model.mask_rule_permute_body2=torch.zeros((num_rules_no_tgt))
+    
+    #rules for which will need permute first body:
+    model.mask_rule_permute_body1 = torch.tensor([model.rules_str[r] in ["A10+","A10","B10","B10+" ] for r in range(num_rules_no_tgt)]).double()
+    #rules for which will need permute second body:
+    model.mask_rule_permute_body2 = torch.tensor([model.rules_str[r] in ["A01+","A01","B01","B01+"] for r in range(num_rules_no_tgt)]).double()
 
 
 

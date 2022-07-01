@@ -42,9 +42,6 @@ if not args.no_log:
 
 
 if __name__ == '__main__':
-    if args.use_cmaes or args.use_progressive_model:
-        raise NotImplemented
-    else:
-        exp = Learn(args)
+    exp = Learn(args)
     exp.run()
     

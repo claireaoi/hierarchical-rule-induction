@@ -18,19 +18,19 @@ from utils.UniversalParam import str2bool, restricted_float_temp, restricted_flo
 
 parser = argparse.ArgumentParser()
 # Training params
-prog_group = parser.add_argument_group('Progressive model')
-prog_group.add_argument(
-    '--use_progressive_model', 
-    default=False,
-    type=str2bool,
-    help='if use progressive model'
-    )
-prog_group.add_argument(
-    '--with_permutation', 
-    default=False,
-    type=str2bool,
-    help='if use permutation of given templates'
-    )
+# prog_group = parser.add_argument_group('Progressive model')
+# prog_group.add_argument(
+#     '--use_progressive_model', 
+#     default=False,
+#     type=str2bool,
+#     help='if use progressive model'
+#     )
+# prog_group.add_argument(
+#     '--with_permutation', 
+#     default=False,
+#     type=str2bool,
+#     help='if use permutation of given templates'
+#     )
 
 train_group = parser.add_argument_group('Train')
 train_group.add_argument(

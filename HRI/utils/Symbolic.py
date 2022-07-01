@@ -75,13 +75,13 @@ def extract_symbolic_model(model, parameters=None, rules=None, predicates_labels
     #and also compute symbolic rules str depending on these coefficients
     full_rules_str=model.rules_str
     permute_masks=None
-    if model.args.use_progressive_model:
-        permute_body1 = torch.round(nn.Sigmoid()(model.permutation_parameters.detach().squeeze()[:-1])) * torch.tensor([(model.rules_str[r] in ["A+"]) for r in range(model.num_rules-1)]).float()
-        permute_body2= torch.round(nn.Sigmoid()(model.permutation_parameters.detach().squeeze()[:-1])) * torch.tensor([(model.rules_str[r] in ["B+"]) for r in range(model.num_rules-1)]).float()
-        permute_masks = [permute_body1, permute_body2]
-        full_rules_str=get_symbolic_templates(model.rules_str, permute_body1, permute_body2)
-        assert len(full_rules_str)==model.num_rules
-        assert list(permute_body1.size())== list(permute_body2.size())==[model.num_rules-1]
+    # if model.args.use_progressive_model:
+    #     permute_body1 = torch.round(nn.Sigmoid()(model.permutation_parameters.detach().squeeze()[:-1])) * torch.tensor([(model.rules_str[r] in ["A+"]) for r in range(model.num_rules-1)]).float()
+    #     permute_body2= torch.round(nn.Sigmoid()(model.permutation_parameters.detach().squeeze()[:-1])) * torch.tensor([(model.rules_str[r] in ["B+"]) for r in range(model.num_rules-1)]).float()
+    #     permute_masks = [permute_body1, permute_body2]
+    #     full_rules_str=get_symbolic_templates(model.rules_str, permute_body1, permute_body2)
+    #     assert len(full_rules_str)==model.num_rules
+    #     assert list(permute_body1.size())== list(permute_body2.size())==[model.num_rules-1]
 
     #--3-extract symbolic path
     #TODO: More efficient unification with symbolic rule instead of this.

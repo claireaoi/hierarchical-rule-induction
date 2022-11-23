@@ -58,14 +58,14 @@ All the evaluation results are shown at the end of the log file.
 Here is the command with default setting used in our paper:
 
 ```
-cd neurosym
+cd HRI
 python MT_GQA.py --num_runs 1 --emb_type='WN' --temperature_decay_mode='linear'  --use_gpu=True --recursivity='none' --max_depth=3 --num_feat=30 --gqa_num_round=3000 --gqa_pos_iter_per_round=5 --gqa_random_iter_per_round=5
 ```
 
 If you want to check learned rules, you need to check corresponding loss_tag of previous trained model (which will be printed at the very begining of log file). Then use this command:
 
 ```
-cd neurosym
+cd HRI
 python MT_GQA_eval_symbolic_rules.py --tag=[LOSS_TAG]
 ```
 
@@ -82,7 +82,7 @@ PATH_TO_DLM=[Your path to DLM]
 Then, for nlrl tasks (i.e. stack, unstack, on) you can run experiments with the following command as the default setting: 
 
 ```
-cd neurosym
+cd HRI
 PYTHONPATH=$PATH_TO_JACINLE:$PATH_TO_DLM python learn-ppo.py --task nlrl-Stack --distribution 1 --dlm-noise 0 --use-gpu --dump-dir . --last-tau 0.01
 ```
 
@@ -91,7 +91,7 @@ You may need to run several times to reproduce the results, or you can test it d
 #### highway tasks
 
 ```
-cd neurosym
+cd HRI
 PYTHONPATH=$PATH_TO_JACINLE:$PATH_TO_DLM python learn-ppo.py --task highway --max_depth 5 --train_steps 5 --eval_steps 5 --distribution 1 --dlm-noise 0 --use-gpu --dump-dir . --last-tau 0.01 --render True --symbolic_eval True --tgt_norm_training True --tgt_norm_eval True
 ```
 

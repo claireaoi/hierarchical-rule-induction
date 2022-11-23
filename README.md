@@ -55,6 +55,46 @@ All the evaluation results are shown at the end of the log file.
 
 #### Multi-task setting
 
+
+
+Here is the command with default setting used in our paper:
+
 ```
-python MT_GQA.py --num_runs 1 --gqa_filter_constants 80 --gqa_split_domain True --gqa_lr_bgs 0.001 --gqa_lr_its 0.01 --gqa_lr_rules 0.01 --gqa_num_round 3000 --gqa_iter_per_round 5  --gqa_random_iter_per_round 5 --gqa_eval_all_ipp 1000000 --gqa_eval_each_ipp 1000000 --head_noise_scale=1.0 --body_noise_scale=1.0 --body_noise_decay=0.5 --emb_type='WN' --unified_templates=True --temperature_decay_mode='linear' --gumbel_noise=0.3 --gumbel_noise_decay_mode='linear'
+cd neurosym
+python MT_GQA.py --num_runs 1 --emb_type='WN' --temperature_decay_mode='linear'  --use_gpu=True --recursivity='none' --max_depth=3 --num_feat=30 --gqa_num_round=3000 --gqa_pos_iter_per_round=5 --gqa_random_iter_per_round=5
 ```
+
+If you want to check learned rules, you need to check corresponding loss_tag of previous trained model (which will be printed at the very begining of log file). Then use this command:
+
+```
+cd neurosym
+python MT_GQA_eval_symbolic_rules.py --tag=[LOSS_TAG]
+
+
+### RL tasks
+Firstly, you need to config the path for DLM (you need the code from neuro-symbolic-claire branch) and Jacinle (same configuration with NLM/DLM) project:
+
+```
+PATH_TO_JACINLE=[Your path to Jacinle]
+PATH_TO_DLM=[Your path to DLM]
+```
+
+#### nlrl tasks
+
+Then, for nlrl tasks (i.e. stack, unstack, on) you can run experiments with the following command as the default setting: 
+
+```
+cd neurosym
+PYTHONPATH=$PATH_TO_JACINLE:$PATH_TO_DLM python learn-ppo.py --task nlrl-Stack --distribution 1 --dlm-noise 0 --use-gpu --dump-dir . --last-tau 0.01
+```
+
+You may need to run several times to reproduce the results, or you can test it directly with one seed we find work successfully by declearing '--seed 15418'. 
+
+#### highway tasks
+
+```
+cd neurosym
+PYTHONPATH=$PATH_TO_JACINLE:$PATH_TO_DLM python learn-ppo.py --task highway --max_depth 5 --train_steps 5 --eval_steps 5 --distribution 1 --dlm-noise 0 --use-gpu --dump-dir . --last-tau 0.01 --render True --symbolic_eval True --tgt_norm_training True --tgt_norm_eval True
+```
+
+

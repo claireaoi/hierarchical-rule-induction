@@ -55,8 +55,6 @@ All the evaluation results are shown at the end of the log file.
 
 #### Multi-task setting
 
-
-
 Here is the command with default setting used in our paper:
 
 ```
@@ -69,7 +67,7 @@ If you want to check learned rules, you need to check corresponding loss_tag of 
 ```
 cd neurosym
 python MT_GQA_eval_symbolic_rules.py --tag=[LOSS_TAG]
-
+```
 
 ### RL tasks
 Firstly, you need to config the path for DLM (you need the code from neuro-symbolic-claire branch) and Jacinle (same configuration with NLM/DLM) project:
